@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cravely | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #050505; color: white; padding: 30px; margin: 0; }
+        h1 { font-weight: 900; letter-spacing: -1px; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #111; border: 1px solid #222; border-radius: 28px; padding: 25px; transition: 0.3s; position: relative; border-left: 10px solid #FFB800; }
+        .card.preparing { border-left-color: #3498db; }
+        .card.ready { border-left-color: #00FF88; }
+        .token { font-size: 26px; font-weight: 900; color: #FFB800; }
+        .btn { border: none; padding: 15px; border-radius: 16px; cursor: pointer; font-weight: 800; width: 100%; margin-top: 15px; transition: 0.3s; }
+        .btn-p { background: #FFB800; color: #000; }
+        .btn-r { background: #00FF88; color: #000; }
+        .rating { font-size: 24px; color: #FFB800; margin-top: 15px; letter-spacing: 5px; }
+    </style>
+</head>
+<body>
+    <h1>👨‍🍳 Kitchen Control Center</h1>
+    <div id="list" class="grid">Loading orders...</div>
+
+    <script>
+        async function load() {
+            const res = await fetch('http://localhost:3000/api/orders');
+            const data = await res.json();
+            document.getElementById('list').innerHTML = data.reverse().map(o => `
+                <div class="card ${o.status}">
+                    <div style="display:flex; justify-content:space-between">
+                        <span class="token">#${o.token}</span>
+                        <span style="font-size:12px; opacity:0.5; font-weight:800;">${o.status.toUpperCase()}</span>
+                    </div>
+                    <p style="margin: 15px 0;"><b>Items:</b> ${o.items.map(i => i.name).join(", ")}</p>
+                    ${o.status === 'pending' ? `<button class="btn btn-p" onclick="upd(${o.token}, 'preparing')">START COOKING</button>` : ''}
+                    ${o.status === 'preparing' ? `<button class="btn btn-r" onclick="upd(${o.token}, 'ready')">MARK AS READY</button>` : ''}
+                    ${o.rating ? `<div class="rating">${"★".repeat(o.rating)}</div>` : ''}
+                </div>
+            `).join('');
+        }
+        async function upd(t, s) {
+            await fetch('http://localhost:3000/api/order/update', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({token: t, status: s})});
+            load();
+        }
+        setInterval(load, 3000); load();
+    </script>
+</body>
+</html>

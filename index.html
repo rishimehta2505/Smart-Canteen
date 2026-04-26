@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cravely | Premium Dining</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --brand: #FFB800; 
+            --brand-glow: rgba(255, 184, 0, 0.4);
+            --bg: #050505; 
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text: #FFFFFF; 
+            --muted: #888888;
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 0; text-align: center; color: var(--text); overflow-x: hidden; }
+
+        /* --- SEXY BACKGROUND: DYNAMIC MESH GRADIENT --- */
+        .aura { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, var(--brand-glow) 0%, transparent 70%); filter: blur(80px); z-index: -1; animation: mesh 15s infinite alternate; top: -200px; left: -200px; pointer-events: none; }
+        .aura-2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(112, 0, 255, 0.15) 0%, transparent 70%); filter: blur(80px); z-index: -1; animation: mesh 12s infinite alternate-reverse; bottom: -100px; right: -100px; pointer-events: none; }
+        @keyframes mesh { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(100px, 150px) scale(1.2); } }
+
+        /* --- LOGO & NAV --- */
+        nav { background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(25px); padding: 20px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--glass-border); }
+        .nav-container { display: flex; align-items: center; justify-content: center; position: relative; max-width: 500px; margin: 0 auto; }
+        .logo { font-weight: 900; font-size: 28px; letter-spacing: -1.5px; background: linear-gradient(to bottom, #FFF, #AAA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo span { background: linear-gradient(to bottom, var(--brand), #B88600); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .history-btn { position: absolute; left: 0; background: var(--glass); border: 1px solid var(--glass-border); color: white; border-radius: 14px; width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: 0.3s; }
+        .history-btn:hover { background: var(--glass-border); transform: rotate(-10deg); }
+
+        /* --- SEARCH & PILLS --- */
+        .search-bar { width: 90%; max-width: 450px; padding: 16px; border-radius: 20px; border: 1px solid var(--glass-border); background: var(--glass); margin: 20px auto 10px; color: white; outline: none; transition: 0.4s; font-family: inherit; font-weight: 600; }
+        .search-bar:focus { border-color: var(--brand); background: rgba(255,255,255,0.06); box-shadow: 0 0 30px rgba(255,184,0,0.1); }
+
+        .categories { display: flex; gap: 12px; overflow-x: auto; padding: 15px 20px; max-width: 500px; margin: 0 auto; scrollbar-width: none; }
+        .pill { padding: 12px 24px; border-radius: 100px; background: var(--glass); border: 1px solid var(--glass-border); cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: 800; color: var(--muted); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .pill.active { background: var(--brand); color: #000; border-color: var(--brand); transform: scale(1.1); box-shadow: 0 10px 20px rgba(255,184,0,0.2); }
+
+        /* --- FOOD CARDS --- */
+        .container { max-width: 500px; margin: 0 auto; padding: 0 15px 140px; }
+        .card { 
+            background: var(--glass); padding: 15px; margin-bottom: 18px; border-radius: 32px; 
+            display: flex; align-items: center; gap: 18px; text-align: left; 
+            border: 1px solid var(--glass-border); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px); opacity: 0; transform: scale(0.9);
+        }
+        .card.show { opacity: 1; transform: scale(1); }
+        .card:hover { background: rgba(255, 255, 255, 0.06); border-color: #555; transform: translateY(-5px); }
+
+        .card img { width: 90px; height: 90px; border-radius: 24px; object-fit: cover; box-shadow: 0 15px 30px rgba(0,0,0,0.4); transition: 0.5s; }
+        .card:hover img { transform: rotate(-3deg) scale(1.1); }
+        
+        .add-btn { background: var(--brand); border: none; width: 46px; height: 46px; border-radius: 18px; cursor: pointer; font-weight: 900; font-size: 26px; box-shadow: 0 8px 20px rgba(255,184,0,0.3); transition: 0.3s; }
+        .add-btn:active { transform: scale(0.85); }
+
+        /* --- FLOATING CART --- */
+        #cart-bar { 
+            position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); 
+            background: rgba(255,255,255,0.95); color: #000; padding: 15px 30px; border-radius: 28px; 
+            display: none; width: 85%; max-width: 420px; justify-content: space-between; 
+            align-items: center; z-index: 2000; box-shadow: 0 30px 60px rgba(0,0,0,0.8); 
+            animation: springUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes springUp { from { bottom: -100px; } to { bottom: 35px; } }
+        .checkout-btn { background: #000; color: #FFF; border: none; padding: 12px 28px; border-radius: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+
+        /* --- SEXY STATUS OVERLAY --- */
+        .full-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; padding: 50px 25px; box-sizing: border-box; overflow-y: auto; }
+        
+        .success-card-3d { 
+            background: linear-gradient(145deg, #181818, #0a0a0a);
+            border: 1px solid var(--glass-border); border-radius: 45px; 
+            padding: 50px 30px; margin-top: 50px; text-align: center;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+            transform: perspective(1000px) rotateX(10deg);
+            position: relative;
+        }
+
+        .token-3d { font-size: 90px; font-weight: 900; color: var(--brand); margin: 25px 0; text-shadow: 0 0 40px var(--brand-glow); letter-spacing: -3px; }
+
+        /* PULSING STEPPER BALLS */
+        .step-ball { width: 40px; height: 40px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-weight: 900; border: 2px solid #222; transition: 0.8s; color: #444; }
+        .step-ball.active { background: var(--brand); color: #000; box-shadow: 0 0 30px var(--brand); border-color: var(--brand); animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 10px var(--brand-glow); } 50% { box-shadow: 0 0 30px var(--brand); } 100% { box-shadow: 0 0 10px var(--brand-glow); } }
+        .step-ball.done { background: #00FF88; color: #000; border-color: #00FF88; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+
+        .star { font-size: 45px; color: #1a1a1a; cursor: pointer; transition: 0.3s; padding: 5px; }
+        .star.active { color: var(--brand); filter: drop-shadow(0 0 15px var(--brand)); }
+        
+        .primary-btn { width: 100%; padding: 22px; border-radius: 24px; border: none; background: var(--brand); font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.4s; margin-top: 30px; box-shadow: 0 15px 30px rgba(255,184,0,0.2); }
+        .primary-btn:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(255,184,0,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="aura"></div>
+<div class="aura-2"></div>
+
+<div id="main-view">
+    <nav>
+        <div class="nav-container">
+            <button class="history-btn" onclick="openHistory()">🕒</button>
+            <div class="logo">Crave<span>ly.</span></div>
+        </div>
+    </nav>
+
+    <input type="text" id="search" class="search-bar" placeholder="What are you craving?" onkeyup="render()">
+    <div class="categories" id="cat-list"></div>
+    
+    <div class="container" id="menuDisplay"></div>
+
+    <div id="cart-bar">
+        <div style="font-weight: 800; font-size: 16px;">🛒 <span id="cart-count">0</span> DISHES</div>
+        <button class="checkout-btn" onclick="openCartReview()">Review Order</button>
+    </div>
+</div>
+
+<!-- OVERLAY SCREENS -->
+<div id="cart-review-view" class="full-screen">
+    <h2 style="font-weight: 900; font-size: 34px; margin-bottom: 40px;">My Order</h2>
+    <div id="review-list"></div>
+    <div style="font-size: 26px; margin: 40px 0; display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 25px;">
+        <span>Grand Total</span><b id="review-total" style="color: var(--brand);">₹0</b>
+    </div>
+    <button class="primary-btn" onclick="openPayment()">PAY & PLACE ORDER</button>
+</div>
+
+<div id="payment-view" class="full-screen">
+    <h2 style="font-weight:900; font-size: 34px;">Checkout</h2>
+    <p style="color:var(--muted); margin-bottom: 40px;">Select Payment Method</p>
+    <div onclick="processPayment('UPI')" style="background:var(--glass); border:1px solid var(--glass-border); padding:25px; border-radius:28px; margin-bottom: 20px; cursor:pointer; font-weight:800; display:flex; justify-content:space-between;">📱 UPI / Google Pay <span>→</span></div>
+    <div onclick="processPayment('Cash')" style="background:var(--glass); border:1px solid var(--glass-border); padding:25px; border-radius:28px; cursor:pointer; font-weight:800; display:flex; justify-content:space-between;">💵 Cash at Counter <span>→</span></div>
+</div>
+
+<div id="status-view" class="full-screen">
+    <div class="success-card-3d">
+        <div id="stat-tag" style="font-weight:900; font-size:12px; color:gray; letter-spacing:3px;">CONFIRMED</div>
+        <div class="token-3d" id="stat-token">#---</div>
+        <div class="stepper-3d" style="display:flex; justify-content:space-between; position:relative; padding:0 20px;">
+            <div class="step-ball active" id="s1">1</div>
+            <div class="step-ball" id="s2">2</div>
+            <div class="step-ball" id="s3">3</div>
+        </div>
+        <h2 id="stat-msg" style="font-size:20px; margin-top:20px;">Waiting for kitchen...</h2>
+        
+        <div id="feedback-ui" style="display:none; margin-top:40px; border-top:1px solid #222; padding-top:30px;">
+            <p style="font-weight:700; color:var(--muted);">Rate the taste</p>
+            <div id="stars"><span class="star" onclick="submitRate(1)">★</span><span class="star" onclick="submitRate(2)">★</span><span class="star" onclick="submitRate(3)">★</span><span class="star" onclick="submitRate(4)">★</span><span class="star" onclick="submitRate(5)">★</span></div>
+            <button class="primary-btn" onclick="location.reload()">Back to Menu</button>
+        </div>
+    </div>
+</div>
+
+<div id="history-view" class="full-screen">
+    <h2 style="font-weight:900;">Recent Orders</h2>
+    <div id="history-list" style="margin: 30px 0;"></div>
+    <button class="primary-btn" onclick="closeScr('history-view')" style="background:#222;">Return</button>
+</div>
+
+<script>
+    let menuData = [], cart = [], selectedCat = 'All', curToken = null;
+    const API = "http://localhost:3000/api";
+
+    async function init() {
+        try {
+            const res = await fetch(`${API}/menu`);
+            menuData = await res.json();
+            const cats = ['All', ...new Set(menuData.map(i => i.cat))];
+            document.getElementById('cat-list').innerHTML = cats.map(c => `<div class="pill ${c==='All'?'active':''}" onclick="setCat('${c}', this)">${c}</div>`).join('');
+            render();
+        } catch(e) { document.getElementById('menuDisplay').innerText = "Server Offline."; }
+    }
+
+    function render() {
+        const q = document.getElementById('search').value.toLowerCase();
+        const items = menuData.filter(i => (selectedCat==='All'||i.cat===selectedCat) && i.name.toLowerCase().includes(q));
+        document.getElementById('menuDisplay').innerHTML = items.map((i, idx) => `
+            <div class="card" style="transition-delay: ${idx * 60}ms">
+                <img src="${i.img}">
+                <div style="flex:1"><b>${i.name}</b><br><small style="color:var(--muted)">₹${i.price}</small></div>
+                <button class="add-btn" onclick="addToCart('${i.name}', ${i.price})">+</button>
+            </div>`).join('');
+        setTimeout(() => document.querySelectorAll('.card').forEach(c => c.classList.add('show')), 50);
+    }
+
+    function setCat(c, el) {
+        selectedCat = c;
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+        render();
+    }
+
+    function addToCart(n, p) {
+        cart.push({name: n, price: p});
+        document.getElementById('cart-count').innerText = cart.length;
+        document.getElementById('cart-bar').style.display = 'flex';
+    }
+
+    function openCartReview() {
+        document.getElementById('review-list').innerHTML = cart.map((i,idx) => `<div style="display:flex; justify-content:space-between; padding:18px 0; border-bottom:1px solid #222;"><span>${i.name}</span><button onclick="rem(${idx})" style="color:var(--brand); background:none; border:none; font-weight:900; cursor:pointer;">✕</button></div>`).join('');
+        document.getElementById('review-total').innerText = "₹" + cart.reduce((s,i)=>s+i.price,0);
+        document.getElementById('cart-review-view').style.display = 'block';
+    }
+
+    function rem(idx) { cart.splice(idx, 1); cart.length ? openCartReview() : closeScr('cart-review-view'); document.getElementById('cart-count').innerText = cart.length; }
+    function openPayment() { closeScr('cart-review-view'); document.getElementById('payment-view').style.display = 'block'; }
+    function closeScr(id) { document.getElementById(id).style.display = 'none'; }
+    function processPayment(m) { closeScr('payment-view'); finalize(m); }
+
+    async function finalize(m) {
+        const total = cart.reduce((s,i)=>s+i.price,0);
+        const res = await fetch(`${API}/order`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ items: cart, total: total, paymentMethod: m })});
+        const data = await res.json();
+        curToken = data.token;
+        
+        let h = JSON.parse(localStorage.getItem('c_h') || "[]");
+        h.push({t: data.token, amt: total, d: new Date().toLocaleDateString()});
+        localStorage.setItem('c_h', JSON.stringify(h));
+
+        document.getElementById('main-view').style.display = 'none';
+        document.getElementById('status-view').style.display = 'block';
+        document.getElementById('stat-token').innerText = "#" + data.token;
+
+        const poll = setInterval(async () => {
+            const r = await fetch(`${API}/order/status/${curToken}`);
+            const d = await r.json();
+            if(d.status === "preparing") { document.getElementById('s2').classList.add('active'); document.getElementById('stat-tag').innerText = "COOKING"; document.getElementById('stat-tag').style.color = "var(--brand)"; document.getElementById('stat-msg').innerText = "Chef is cooking your meal! 👨‍🍳"; }
+            if(d.status === "ready") {
+                document.getElementById('s2').classList.add('done'); document.getElementById('s3').classList.add('active');
+                document.getElementById('stat-tag').innerText = "PICK UP"; document.getElementById('stat-tag').style.color = "#00FF88";
+                document.getElementById('stat-msg').innerHTML = "<b style='color:#00FF88'>READY AT COUNTER ✅</b>";
+                document.getElementById('feedback-ui').style.display = 'block';
+                clearInterval(poll);
+            }
+        }, 3000);
+    }
+
+    async function submitRate(s) {
+        document.querySelectorAll('.star').forEach((star, i) => { if(i < s) star.classList.add('active'); });
+        await fetch(`${API}/order/rate`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({token: curToken, rating: s})});
+        setTimeout(() => location.reload(), 1000);
+    }
+
+    function openHistory() {
+        const h = JSON.parse(localStorage.getItem('c_h') || "[]");
+        document.getElementById('history-list').innerHTML = h.reverse().map(i => `<div style="background:var(--glass); border:1px solid var(--glass-border); padding:20px; border-radius:24px; margin-bottom:15px; text-align:left;"><div style="display:flex; justify-content:space-between"><b>Order #${i.t}</b><small style="color:var(--muted)">${i.d}</small></div><div style="color:var(--brand); font-weight:900; margin-top:5px; font-size:20px;">₹${i.amt}</div></div>`).join('');
+        document.getElementById('history-view').style.display = 'block';
+    }
+
+    init();
+</script>
+</body>
+</html>
